@@ -57,18 +57,18 @@ public class MyMapView extends MapActivity {
 	    
 	    //we have an array of lats and longs from our database, we use those
 	    EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
-	    ArrayList<Float> coords = edbh.getLatLong();
+	    ArrayList<MapPoint> coords = edbh.getLatLong();
 	    edbh.close();
 	    
 	    
    
 	    
 	    System.out.println(coords.size() + " Records");
-	    for (int i = 0; i < coords.size(); i+=2) {
+	    for (int i = 0; i < coords.size(); i++) {
 	    	
 	    		
-	    		int a = (int)(coords.get(i) * 1E6);
-	    		int b = (int)(coords.get(i + 1) * 1E6);
+	    		int a = (int)(coords.get(i).latitude * 1E6);
+	    		int b = (int)(coords.get(i).longitude * 1E6);
 	    		System.out.println(a + " APPMESG " +b);
 	    		GeoPoint p = new GeoPoint(a, b);
 	    		createMarker(p);

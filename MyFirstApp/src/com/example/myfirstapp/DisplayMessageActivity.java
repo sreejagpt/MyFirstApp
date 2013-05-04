@@ -122,7 +122,7 @@ public class DisplayMessageActivity extends Activity {
 		
 		wifiDbHelper.addRow(SSID, MAC, desc);
 		cellDbHelper.addRow(CellID, LAC);
-		entryDbHelper.addRow(timestamp, CellID, MAC, latitude, longitude, wStrength, cStrength);
+		entryDbHelper.addRow(timestamp, CellID, MAC, latitude, longitude, wStrength, cStrength, SSID, desc, LAC);
 		
 		
 		wifiDbHelper.close();

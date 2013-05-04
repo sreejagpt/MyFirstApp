@@ -44,7 +44,7 @@ public class MyFirstActivity extends Activity implements LocationListener {
 	LocationManager locationManager;
 	Location location;
 	String provider = LocationManager.GPS_PROVIDER;
-	double latitude, longitude;
+	float latitude, longitude;
 	int cellStrength = 0;
 	String CellId = "", LAC = "";
 	List<ScanResult> results;
@@ -124,13 +124,13 @@ public class MyFirstActivity extends Activity implements LocationListener {
 	 
 	  public void onLocationChanged(Location location) {
 		if (location == null) {
-			latitude = 0.0;
-			longitude = 0.0;
+			latitude = 0.0f;
+			longitude = 0.0f;
 			return;
 			
 		}
-	    latitude = location.getLatitude();
-	    longitude = location.getLongitude();
+	    latitude = (float) location.getLatitude();
+	    longitude = (float) location.getLongitude();
 	  
 	  }
 
