@@ -11,7 +11,7 @@ public class CellDB_Helper extends SQLiteOpenHelper{
 	//some constant string definitions
 	static final String DB_PATH = "";
 	static final String DB_NAME = "cellInfo.sqlite";
-	static final int SQLITE_DB_VERSION = 1;
+	static final int SQLITE_DB_VERSION = 5;
 	public static final String TABLE_CELL = "CellIDLAC";
 	public static final String CREATE_CELL_TABLE = "CREATE TABLE " +
 			"CellIDLAC ( _id integer primary key autoincrement, " +
@@ -38,7 +38,7 @@ public class CellDB_Helper extends SQLiteOpenHelper{
 		Log.w(CellDB_Helper.class.getName(),
 		        "Upgrading database from version " + oldVersion + " to "
 		            + newVersion + ".");
-		    db.execSQL("DROP TABLE IF EXISTS CellID");
+		    db.execSQL("DROP TABLE CellIDLAC");
 		    onCreate(db);
 		
 	}

@@ -14,7 +14,7 @@ public class WiFiDB_Helper extends SQLiteOpenHelper {	/**
 		//some constant string definitions
 		static final String DB_PATH = "";
 		static final String DB_NAME = "wifi.sqlite";
-		static final int SQLITE_DB_VERSION = 1;
+		static final int SQLITE_DB_VERSION = 5;
 		public static final String TABLE_WIFI = "WiFiAccessPoints";
 		public static final String CREATE_WIFI_TABLE = "CREATE TABLE " +
 				"WiFiAccessPoints ( _id integer primary key autoincrement, " +
@@ -45,7 +45,7 @@ public class WiFiDB_Helper extends SQLiteOpenHelper {	/**
 			Log.w(WiFiDB_Helper.class.getName(),
 			        "Upgrading database from version " + oldVersion + " to "
 			            + newVersion + ".");
-			    db.execSQL("DROP TABLE IF EXISTS SSID");
+			    db.execSQL("DROP TABLE WiFiAccessPoints");
 			    onCreate(db);
 		}
 

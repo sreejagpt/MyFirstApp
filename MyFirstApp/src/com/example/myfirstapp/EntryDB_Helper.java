@@ -14,7 +14,7 @@ public class EntryDB_Helper extends SQLiteOpenHelper{
 	//some constant string definitions
 			static final String DB_PATH = "";
 			static final String DB_NAME = "entry.sqlite";
-			static final int SQLITE_DB_VERSION = 1;
+			static final int SQLITE_DB_VERSION = 5;
 			public static final String TABLE_ENTRY = "Entries";
 			public static final String CREATE_ENTRY_TABLE = "CREATE TABLE IF NOT EXISTS " +
 					"Entries ( _id integer primary key autoincrement, " +
@@ -48,7 +48,7 @@ public class EntryDB_Helper extends SQLiteOpenHelper{
 				Log.w(EntryDB_Helper.class.getName(),
 				        "Upgrading database from version " + oldVersion + " to "
 				            + newVersion + ".");
-				    db.execSQL("DROP TABLE IF EXISTS TimeStamp");
+				    db.execSQL("DROP TABLE Entries");
 				    onCreate(db);
 				
 			}
