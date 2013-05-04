@@ -17,4 +17,12 @@ public class MapPoint {
 		description = d;
 	}
 	
+	public int getWiFiStrength() {
+		return this.WifiStrength;
+	}
+	
+	public int getCellStrength() {
+		return this.CellStrength;
+	}
+	
 }

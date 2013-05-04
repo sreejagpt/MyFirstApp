@@ -18,7 +18,7 @@ import com.google.android.maps.OverlayItem;
 
 
 
-public class MyMapView extends MapActivity {
+public class backup_mapview extends MapActivity {
 
 	  private MapController mapController;
 	  private MapView mapView;
