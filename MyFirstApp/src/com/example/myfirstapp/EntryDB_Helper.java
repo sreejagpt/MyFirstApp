@@ -80,7 +80,8 @@ public class EntryDB_Helper extends SQLiteOpenHelper{
 			public ArrayList<MapPoint> getLatLong() {
 				ArrayList<MapPoint> ret = new ArrayList<MapPoint>();
 				myDB = getReadableDatabase();
-				String query = "SELECT * FROM Entries;";
+				String query = "SELECT DISTINCT latitude, longitude, WiFiStrength, CellStrength, MacAddress, CellId," +
+						"LAC, WiFiSSID, Description FROM Entries;";
 				System.out.println("getLatLong1");
 				Cursor c = myDB.rawQuery(query, null);
 				System.out.println("getLatLong2");
