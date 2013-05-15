@@ -7,26 +7,18 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.RadialGradient;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
-import com.example.myfirstapp.R.drawable;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
@@ -38,7 +30,9 @@ public class MyMapView extends Activity {
 
 	  private GoogleMap map;
 	  private HashMap<LatLng, Integer> hm = new HashMap<LatLng, Integer>();
-	  private int zoomScaler = 80;
+	  private Spinner spinner_wifi_cell, spinner_access_points;
+	  List<String> list_wifi_cell = Arrays.asList("WiFi", "3G/4G", "All");
+	  List<Object> list_access_points = new ArrayList<Object>();
 	  @SuppressLint("NewApi")
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -61,24 +55,21 @@ public class MyMapView extends Activity {
 
 	    // Get Current Location
 	    Location myLocation = locationManager.getLastKnownLocation(provider);
+	   
 	    
-	    // Get latitude of the current location
-	    double latitude = myLocation.getLatitude();
-
-	    // Get longitude of the current location
-	    double longitude = myLocation.getLongitude();
-
-	    // Create a LatLng object for the current location
-	    LatLng latLng = new LatLng(latitude, longitude);      
-
 	    // Show the current location in Google Map        
-	    map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+	    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng
+	    		(myLocation.getLatitude(), myLocation.getLongitude()), 16));
+	    
+	    addItemsToSpinners();
+	    
 	    
 	    map.setOnCameraChangeListener(new OnCameraChangeListener() {
 	    	
             
 	    	public void onCameraChange(CameraPosition position) {
 	    		
+	    	    
 	    		//rectify zoom level
 	    		if(position.zoom > 18) {
 	    			//we should not be zoomed in more than level 16
@@ -89,26 +80,65 @@ public class MyMapView extends Activity {
 	    		}
 	    		LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
 	    		
-                plotHeatPoints(bounds);
+                
+                EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
+    		    ArrayList<MapPoint> coords = edbh.getLatLong();
+    		    edbh.close();
+                HashMap<String, String> accessPoints = new HashMap<String, String>();
+    		    
+    		    for (int i = coords.size() - 1; i >= 0; i--) {
+    		    	
+    		    	LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
+    		    	
+    		    	if (bounds.contains(latLng) && hm.get(latLng) == null) {
+    		    		
+    		    		accessPoints.put(coords.get(i).SSID, "-"); //to ensure uniqueness
+    		    		list_access_points = Arrays.asList(accessPoints.keySet().toArray());
+    				    spinner_access_points=(Spinner) findViewById(R.id.access_points_spinner);
+    				    ArrayAdapter<Object> accessPointsAdapter = new ArrayAdapter<Object>(getApplicationContext(),
+    							android.R.layout.simple_spinner_item, list_access_points);
+    					  accessPointsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    					  spinner_access_points.setAdapter(accessPointsAdapter);
+    		    	}
+    		    } //updating access points spinner ends here
+    		    
+    		    plotHeatPoints(bounds);
             }
         });
 
 	  } 
 
 	 
-	  private void plotHeatPoints(LatLngBounds bounds) {
+	  private void addItemsToSpinners() {
+		  spinner_wifi_cell = (Spinner) findViewById(R.id.wifi_or_cell_spinner);
+		  
+		  
+		  ArrayAdapter<String> wifiCellAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, list_wifi_cell);
+		  wifiCellAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		  spinner_wifi_cell.setAdapter(wifiCellAdapter);
+		  
+		  /////////
+		  
+		  
+		
+	}
+
+
+	private void plotHeatPoints(LatLngBounds bounds) {
 		//we have an array of lats and longs from our database, we use those
 		    EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
 		    ArrayList<MapPoint> coords = edbh.getLatLong();
 		    edbh.close();
 		    
 		    
-		    if (coords == null) return; //should stop map from crashing if no coords found
 		    
+		    
+			  
 		    for (int i = coords.size() - 1; i >= 0; i--) {
-		    	
-		    	LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
 		    	int strength = coords.get(i).getWiFiStrength();
+		    	LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
+		    	
 		    	if (bounds.contains(latLng) && hm.get(latLng) == null) {
 		    		hm.put(latLng, strength); 
 		    		

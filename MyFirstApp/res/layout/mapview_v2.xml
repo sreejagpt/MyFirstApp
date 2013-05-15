@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-	<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+	<fragment 
           android:id="@+id/map"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:name="com.google.android.gms.maps.MapFragment"/>
+	    
+    <ImageView
+        android:id="@+id/key"
+        android:layout_alignParentTop="true"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/key"/>
+    
+    <Spinner
+        android:id="@+id/wifi_or_cell_spinner"
+        android:layout_toRightOf="@id/key"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"/>
+    
+    <Spinner
+    android:id="@+id/access_points_spinner"
+    android:layout_toRightOf="@id/wifi_or_cell_spinner"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content" />
+</RelativeLayout>
