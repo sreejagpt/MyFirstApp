@@ -8,7 +8,6 @@ import java.util.TreeMap;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -20,7 +19,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,6 +47,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	  private String currentChoice = "All";
 	  private int showLabels = 0;
 	  private ArrayList<Marker> markers = new ArrayList<Marker>();
+	  private LatLngBounds old_bounds;
 	  @SuppressLint("NewApi")
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +77,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	    		(myLocation.getLatitude(), myLocation.getLongitude()), 16));
 	    
 	    addItemsToSpinners();
-	    
+	    old_bounds = map.getProjection().getVisibleRegion().latLngBounds;
 	    
 	  //setup Button listener for show label button
         final Button labelBtn = (Button) findViewById(R.id.showLabels);
@@ -175,13 +174,20 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     		    	set_spinner2_adapter();
     		    }
     		    
+    		    //If map has moved but "All" is selected
+    		    //we only want to do it if map has moved by a large amount
+    		    LatLngBounds current_bounds = map.getProjection().getVisibleRegion().latLngBounds;
+    		    
+    		    //create "bounding box" window to decrease sensitivity of motion
     		    if (currentChoice.equals("All") && 
-    		    		(!(prev_list_access_points.equals(list_access_points))) && showLabels == 0) {
-    		    	
+    		    		(!(prev_list_access_points.equals(list_access_points))) 
+    		    		&& showLabels == 0
+    		    		&& distance(bounds.northeast, old_bounds.northeast) > 0.0028) {
     		    	map.clear();
     		    	Toast.makeText( getApplicationContext(), "Recalculating...", Toast.LENGTH_SHORT ).show();
     		    	plotHeatPoints(coords, map.getProjection().getVisibleRegion().latLngBounds);
-    		    	set_spinner2_adapter(); //this is the last thing i added. feel free to remove.
+    		    	old_bounds = current_bounds;
+    		    	set_spinner2_adapter(); 
     		    	return;
     		    }
     		    
@@ -191,6 +197,15 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     		    
     		    
             }
+
+			private double distance(LatLng northeast, LatLng northeast2) {
+				// Calculates Euclidean distance between two coordinates
+				double x1 = northeast.latitude;
+				double y1 = northeast.longitude;
+				double x2 = northeast2.latitude;
+				double y2 = northeast2.longitude;
+				return Math.sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
+			}
 
 	    	
 	    	
@@ -224,12 +239,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 
 	private void plotHeatPoints(List<MapPoint> coords1, LatLngBounds bounds) {
 		
-			
-		    //start with empty map
-			//if (!(currentChoice.equals(previousChoice))) {
-				//map.clear();
-			//}
-		    
+
 			 //extend bounds slightly
 			bounds.including(new LatLng(bounds.northeast.latitude+7.0, bounds.northeast.longitude+7.0));
 			bounds.including(new LatLng(bounds.southwest.latitude+7.0, bounds.southwest.longitude+7.0));
@@ -333,6 +343,9 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
 		ArrayList<MapPoint> coords1 = edbh.getLatLong();
 		edbh.close();
+		
+		//If "All" is selected, but it has recently changed, ie, the user has
+		//explicitly clicked "All"
 		if (currentChoice.equals("All")) {
 			if (!(previousChoice.equals(currentChoice))) {
 				map.clear();
@@ -348,9 +361,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		
 		
 		ArrayList<MapPoint> specialcoords = new ArrayList<MapPoint>();
-		
-		
-		
+
 		for(int i = 0; i < coords1.size(); i++) {
 			
 			if (coords1.get(i).SSID.equals(currentChoice)) {
