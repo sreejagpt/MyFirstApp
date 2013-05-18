@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Point;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -19,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -121,7 +123,9 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     		    
     		    if (currentChoice.equals("All") && 
     		    		(!(prev_list_access_points.equals(list_access_points)))) {
+    		    	
     		    	map.clear();
+    		    	Toast.makeText( getApplicationContext(), "Recalculating...", Toast.LENGTH_SHORT ).show();
     		    	plotHeatPoints(coords, map.getProjection().getVisibleRegion().latLngBounds);
     		    	set_spinner2_adapter(); //this is the last thing i added. feel free to remove.
     		    	return;
@@ -172,7 +176,10 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 				//map.clear();
 			//}
 		    
-			  
+			 //extend bounds slightly
+			bounds.including(new LatLng(bounds.northeast.latitude+7.0, bounds.northeast.longitude+7.0));
+			bounds.including(new LatLng(bounds.southwest.latitude+7.0, bounds.southwest.longitude+7.0));
+			
 		    for (int i = coords1.size() - 1; i >= 0; i--) {
 		    	int strength = coords1.get(i).getWiFiStrength();
 		    	LatLng latLng = new LatLng(coords1.get(i).latitude, coords1.get(i).longitude);
@@ -275,6 +282,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		if (currentChoice.equals("All")) {
 			if (!(previousChoice.equals(currentChoice))) {
 				map.clear();
+				Toast.makeText( this, "Recalculating...", Toast.LENGTH_SHORT ).show();
 				plotHeatPoints(coords1, map.getProjection().getVisibleRegion().latLngBounds);
 				previousChoice = currentChoice;
 				return;
@@ -299,6 +307,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		
 		if (!(currentChoice.equals(previousChoice))) {
 			map.clear();
+			Toast.makeText( this, "Recalculating...", Toast.LENGTH_SHORT ).show();
 			plotHeatPoints(specialcoords, map.getProjection().getVisibleRegion().latLngBounds);
 		}
 		System.out.println("APPMESG:: Previous: "+previousChoice+" Current: "+currentChoice);
