@@ -26,6 +26,6 @@
     <Spinner
     android:id="@+id/access_points_spinner"
     android:layout_toRightOf="@id/wifi_or_cell_spinner"
-    android:layout_width="100dp"
+    android:layout_width="80dp"
     android:layout_height="wrap_content" />
 </RelativeLayout>
