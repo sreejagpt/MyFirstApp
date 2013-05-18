@@ -2,14 +2,13 @@ package com.example.myfirstapp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Point;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -19,7 +18,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,11 +33,12 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MyMapView extends Activity implements OnItemSelectedListener {
 
 	  private GoogleMap map;
-	  private HashMap<LatLng, Integer> hm = new HashMap<LatLng, Integer>();
 	  private Spinner spinner_wifi_cell, spinner_access_points;
 	  private ArrayAdapter<Object> accessPointsAdapter;
 	  List<String> list_wifi_cell = Arrays.asList("WiFi", "3G/4G", "All");
@@ -45,6 +47,8 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	  ArrayList<MapPoint> coords = new ArrayList<MapPoint>();
 	  private String previousChoice = "";
 	  private String currentChoice = "All";
+	  private int showLabels = 0;
+	  private ArrayList<Marker> markers = new ArrayList<Marker>();
 	  @SuppressLint("NewApi")
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -76,16 +80,66 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	    addItemsToSpinners();
 	    
 	    
+	  //setup Button listener for show label button
+        final Button labelBtn = (Button) findViewById(R.id.showLabels);
+    	
+    	//setup onclick listener for label button
+    	//everytime it is pressed, showLabels gets set to 1. Button label 
+        //changes to hide label. Toggle mechanism is set up.
+    	labelBtn.setOnClickListener(new Button.OnClickListener() {
+    		
+    		 public void onClick(View v) {
+    			 //start activity MyMapView
+    			
+    			 if (labelBtn.getText().equals("Show Labels")) {
+    				 showLabels = 1;
+    				 markers.clear();
+    				 for(int i = 0; i < coords.size(); i++){
+    					 LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
+						 if (currentChoice.equals("All")) {
+						//Post little floating notices
+						   markers.add( map.addMarker(new MarkerOptions()
+	                          .position(latLng)
+	                          .title(coords.get(i).SSID)
+	                          .snippet(coords.get(i).description)
+	                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
+						 } else {
+							 if (coords.get(i).SSID.equals(currentChoice)) {
+								 markers.add( map.addMarker(new MarkerOptions()
+		                          .position(latLng)
+		                          .title(coords.get(i).SSID)
+		                          .snippet(coords.get(i).description)
+		                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
+							 }
+						 }
+					   }
+					   
+    				 labelBtn.setText("Hide Labels");
+    			 } else {
+    				 showLabels = 0;
+    				 for (int i = 0; i < markers.size(); i++) {
+    					 markers.get(i).remove();
+    				 }
+    				 markers.clear();
+    				 labelBtn.setText("Show Labels");
+    			 }
+    		 }
+    	});//button listener closes
+	    
+	    
 	    map.setOnCameraChangeListener(new OnCameraChangeListener() {
 	    	
             
 	    	public void onCameraChange(CameraPosition position) {
 	    		
-	    	   
+	    		int maxAllowedZoom = 18;
+	    		if (showLabels == 1) {
+	    			maxAllowedZoom = 24;
+	    		}
 	    		//rectify zoom level
-	    		if(position.zoom > 18) {
-	    			//we should not be zoomed in more than level 16
-	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(position.target, 18));
+	    		if(position.zoom > maxAllowedZoom) {
+	    			//we should not be zoomed in more than level 24
+	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(position.target, maxAllowedZoom));
 	    		}
 	    		if (position.zoom < 16) {
 	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(position.target, 16));
@@ -122,7 +176,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     		    }
     		    
     		    if (currentChoice.equals("All") && 
-    		    		(!(prev_list_access_points.equals(list_access_points)))) {
+    		    		(!(prev_list_access_points.equals(list_access_points))) && showLabels == 0) {
     		    	
     		    	map.clear();
     		    	Toast.makeText( getApplicationContext(), "Recalculating...", Toast.LENGTH_SHORT ).show();
@@ -181,7 +235,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 			bounds.including(new LatLng(bounds.southwest.latitude+7.0, bounds.southwest.longitude+7.0));
 			
 		    for (int i = coords1.size() - 1; i >= 0; i--) {
-		    	int strength = coords1.get(i).getWiFiStrength();
+		    	
 		    	LatLng latLng = new LatLng(coords1.get(i).latitude, coords1.get(i).longitude);
 		    	
 		    	if (bounds.contains(latLng)) {
@@ -198,13 +252,14 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 					
 					try {
 						
-					   // Adds a ground overlay with 50% transparency.
+					   // Adds a ground overlay with transparency.
 					   GroundOverlay groundOverlay = map.addGroundOverlay(new GroundOverlayOptions()
 			    		     .image(BitmapDescriptorFactory.fromResource(resourceInfo.get(0)))
 			    		     .zIndex(resourceInfo.get(1))
 			    		     .position(latLng, resourceInfo.get(2) * 20)//possibly scale this according to zoom level
 			    		     .transparency((1 - 0.03f * (resourceInfo.get(1) % 10))));
 					   
+
 			    		 	
 					} catch (Exception ex) {
 					   Log.e("Error", ex.getMessage()); 
@@ -271,7 +326,6 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		
 		
 		//however, if the item was not clicked , we don't want current choice to update
-		//how to implement that?
 		
 		currentChoice = (String) list_access_points.get((int) parent.getItemIdAtPosition(position));
 		
@@ -292,14 +346,13 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 			return; //this is important. Function must return at this point.
 		}
 		
-		//we have our selection working! 
 		
 		ArrayList<MapPoint> specialcoords = new ArrayList<MapPoint>();
 		
 		
-		System.out.println("===========");
+		
 		for(int i = 0; i < coords1.size(); i++) {
-			System.out.println("APPMESG SSID: "+coords1.get(i).SSID);
+			
 			if (coords1.get(i).SSID.equals(currentChoice)) {
 				specialcoords.add(coords1.get(i));
 			}
@@ -310,7 +363,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 			Toast.makeText( this, "Recalculating...", Toast.LENGTH_SHORT ).show();
 			plotHeatPoints(specialcoords, map.getProjection().getVisibleRegion().latLngBounds);
 		}
-		System.out.println("APPMESG:: Previous: "+previousChoice+" Current: "+currentChoice);
+		
 		previousChoice = currentChoice;
 		
 	}

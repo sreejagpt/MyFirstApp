@@ -8,5 +8,6 @@
     <string name="Description">DESCRIPTION:</string>
     <string name="openWiFi">Submit a WiFi Access Point</string>
     <string name="openMaps">See Map View</string>
+    <string name="show_labels">Show Labels</string>
 
 </resources>
