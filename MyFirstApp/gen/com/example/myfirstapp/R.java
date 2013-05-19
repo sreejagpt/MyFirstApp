@@ -130,34 +130,37 @@ containing a value of this type.
     }
     public static final class drawable {
         public static final int ap_marker=0x7f020000;
-        public static final int hp_blue=0x7f020001;
-        public static final int hp_deep_blue=0x7f020002;
-        public static final int hp_golden=0x7f020003;
-        public static final int hp_green=0x7f020004;
-        public static final int hp_lime_green=0x7f020005;
-        public static final int hp_orange=0x7f020006;
-        public static final int hp_red=0x7f020007;
-        public static final int hp_reddish_orange=0x7f020008;
-        public static final int hp_turquoise=0x7f020009;
-        public static final int ic_action_search=0x7f02000a;
-        public static final int ic_launcher=0x7f02000b;
-        public static final int key=0x7f02000c;
-        public static final int point=0x7f02000d;
-        public static final int test=0x7f02000e;
-        public static final int wifi=0x7f02000f;
+        public static final int bg_image=0x7f020001;
+        public static final int gradient=0x7f020002;
+        public static final int hp_blue=0x7f020003;
+        public static final int hp_deep_blue=0x7f020004;
+        public static final int hp_golden=0x7f020005;
+        public static final int hp_green=0x7f020006;
+        public static final int hp_lime_green=0x7f020007;
+        public static final int hp_orange=0x7f020008;
+        public static final int hp_red=0x7f020009;
+        public static final int hp_reddish_orange=0x7f02000a;
+        public static final int hp_turquoise=0x7f02000b;
+        public static final int ic_action_search=0x7f02000c;
+        public static final int ic_launcher=0x7f02000d;
+        public static final int key=0x7f02000e;
+        public static final int point=0x7f02000f;
+        public static final int test=0x7f020010;
+        public static final int wifi=0x7f020011;
     }
     public static final class id {
         public static final int access_points_spinner=0x7f040009;
+        public static final int bg=0x7f04000f;
         public static final int editDescr=0x7f04000c;
         public static final int hybrid=0x7f040004;
         public static final int key=0x7f040007;
         public static final int list=0x7f040005;
         public static final int map=0x7f040006;
-        public static final int menu_settings=0x7f040011;
+        public static final int menu_settings=0x7f040012;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
-        public static final int openMaps=0x7f04000f;
-        public static final int openWiFiList=0x7f040010;
+        public static final int openMaps=0x7f040010;
+        public static final int openWiFiList=0x7f040011;
         public static final int rowTextView=0x7f04000e;
         public static final int satellite=0x7f040002;
         public static final int showLabels=0x7f04000a;
