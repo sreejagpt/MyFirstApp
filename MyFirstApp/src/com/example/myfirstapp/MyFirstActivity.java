@@ -159,8 +159,8 @@ public class MyFirstActivity extends Activity implements LocationListener {
             for(int i = 0; i < results.size(); i++) {
             	//creating a string list with each WiFi network as a separate element
             	System.out.println("Appmesg: Iteration Number " + i);
-            	entry = "SSID: " + results.get(i).SSID + " | BSSID: " + 
-            			results.get(i).BSSID + " | Signal Strength (dBm): " + 
+            	entry = "SSID: " + results.get(i).SSID + " \nBSSID: " + 
+            			results.get(i).BSSID + " \nSignal Strength (dBm): " + 
             			results.get(i).level;
             	
             	resultList.add(entry);

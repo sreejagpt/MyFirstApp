@@ -55,9 +55,9 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	    setContentView(R.layout.mapview_v2);
 	    map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 	        .getMap();
-
+	    //map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 	    map.setMyLocationEnabled(true);
-
+	    
 
 	    // Get LocationManager object from System Service LOCATION_SERVICE
 	    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -268,9 +268,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 			    		     .zIndex(resourceInfo.get(1))
 			    		     .position(latLng, resourceInfo.get(2) * 20)//possibly scale this according to zoom level
 			    		     .transparency((1 - 0.03f * (resourceInfo.get(1) % 10))));
-					   
 
-			    		 	
 					} catch (Exception ex) {
 					   Log.e("Error", ex.getMessage()); 
 					}

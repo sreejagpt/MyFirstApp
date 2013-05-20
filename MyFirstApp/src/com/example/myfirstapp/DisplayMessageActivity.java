@@ -124,7 +124,7 @@ public class DisplayMessageActivity extends Activity {
 		cellDbHelper.addRow(CellID, LAC);
 		entryDbHelper.addRow(timestamp, CellID, MAC, latitude, longitude, wStrength, cStrength, SSID, desc, LAC);
 		
-		
+
 		wifiDbHelper.close();
 		cellDbHelper.close();
 		entryDbHelper.close();
