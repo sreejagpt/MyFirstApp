@@ -117,7 +117,10 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 			                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
 								 }
 							 }
+							 
+							 
 						   }
+	    				 labelBtn.setText("Hide Labels");
     				 } else {
     					 //plot markers for cell coords
     					 CellDB_Helper cdbh = new CellDB_Helper(getApplicationContext());
@@ -141,9 +144,9 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
    								 }
    							 }
    						   }
-    						
+    						labelBtn.setText("Hide Labels");	
     				 }
-    				 labelBtn.setText("Hide Labels");
+    				 
     			 } else {
     				 showLabels = 0;
     				 for (int i = 0; i < markers.size(); i++) {
