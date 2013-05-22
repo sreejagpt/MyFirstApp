@@ -1,34 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient">
 
-    <ImageView
-        android:id="@+id/bg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/bg_image" />
-
-    <Button
-        android:id="@+id/openMaps"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/openWiFiList"
-        android:clickable="true"
-        android:text="@string/openMaps" />
 
     <Button
         android:id="@+id/openWiFiList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/openMaps"
-        android:clickable="true"
-        android:text="@string/openWiFi" />
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="20dp"
+        android:background="@layout/submit_btn_image"
+        android:clickable="true" />
+
+   <TextView
+       android:id="@+id/submitWiFi"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginLeft="50dp"
+       android:layout_marginTop="165dp"
+       android:text="@string/openWiFi"
+       android:textSize="18sp" 
+       android:textColor="#000000">
+
+	</TextView>
+    
+    <Button
+        android:id="@+id/openMaps"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="200dp"
+        android:background="@layout/map_btn_image"
+        android:clickable="true" />
+    
+      <TextView
+       android:id="@+id/viewMap"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginLeft="97dp"
+       android:layout_marginTop="345dp"
+       android:text="@string/openMaps"
+       android:textSize="18sp" 
+       android:textColor="#000000">
+
+	</TextView>
 
 </RelativeLayout>

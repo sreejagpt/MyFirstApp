@@ -24,7 +24,7 @@ public class DisplayMessageActivity extends Activity {
 	Socket socket = null;
 	PrintWriter out = null;
 	BufferedReader in = null;
-	String SSID, MAC, CellID, LAC, timestamp;
+	String SSID, MAC, CellID, LAC, timestamp, Provider;
 	float latitude, longitude;
 	int wStrength, cStrength;
     @Override
@@ -44,6 +44,7 @@ public class DisplayMessageActivity extends Activity {
         MAC = i.getStringExtra("MAC");
         CellID = i.getStringExtra("CellID");
         LAC = i.getStringExtra("LAC");
+        Provider = i.getStringExtra("Provider");
         
         wStrength = i.getIntExtra("wStrength", 0);
         cStrength = i.getIntExtra("CellStrength", 0);
@@ -121,7 +122,7 @@ public class DisplayMessageActivity extends Activity {
 		EntryDB_Helper entryDbHelper = new EntryDB_Helper(getApplicationContext());
 		
 		wifiDbHelper.addRow(SSID, MAC, desc);
-		cellDbHelper.addRow(CellID, LAC);
+		cellDbHelper.addRow(CellID, LAC, Provider, cStrength, latitude, longitude);
 		entryDbHelper.addRow(timestamp, CellID, MAC, latitude, longitude, wStrength, cStrength, SSID, desc, LAC);
 		
 

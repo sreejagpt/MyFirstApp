@@ -46,7 +46,7 @@ public class MyFirstActivity extends Activity implements LocationListener {
 	String provider = LocationManager.GPS_PROVIDER;
 	float latitude, longitude;
 	int cellStrength = 0;
-	String CellId = "", LAC = "";
+	String CellId = "", LAC = "", Provider = "";
 	List<ScanResult> results;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,7 @@ public class MyFirstActivity extends Activity implements LocationListener {
         		 i.putExtra("MAC", results.get(position).BSSID);
         		 i.putExtra("wStrength", results.get(position).level);
         		 i.putExtra("CellStrength", cellStrength);
+        		 i.putExtra("Provider", Provider);
                  startActivity(i);
              }
         });
@@ -101,6 +102,7 @@ public class MyFirstActivity extends Activity implements LocationListener {
         MyListener   = new MyPhoneStateListener();
         Tel       = ( TelephonyManager )getSystemService(Context.TELEPHONY_SERVICE);
         Tel.listen(MyListener ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        System.out.println("APPMESG: "+Tel.getNetworkOperatorName());
     	printWiFiStats();
    
     }
@@ -230,13 +232,14 @@ public class MyFirstActivity extends Activity implements LocationListener {
 	    	
 	
 	    	location = (GsmCellLocation) tm.getCellLocation();
-	    	
+	    	String operatorName = Tel.getNetworkOperatorName();
 
 	        cid = location.getCid();
 	        lac = location.getLac();
 	        
 	        CellId = cid + "";
 	        LAC = lac + "";
+	        Provider = operatorName + "";
 	        /*
 	         * Check if the current cell is a UMTS (3G) cell. If a 3G cell the cell id
 	         * padding will be 8 numbers, if not 4 numbers.

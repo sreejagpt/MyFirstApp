@@ -39,7 +39,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	  private GoogleMap map;
 	  private Spinner spinner_wifi_cell, spinner_access_points;
 	  private ArrayAdapter<Object> accessPointsAdapter;
-	  List<String> list_wifi_cell = Arrays.asList("WiFi", "3G/4G", "All");
+	  List<String> list_wifi_cell = Arrays.asList("WiFi", "3G/4G");
 	  List<Object> list_access_points = new ArrayList<Object>();
 	  List<Object> prev_list_access_points = new ArrayList<Object>();
 	  ArrayList<MapPoint> coords = new ArrayList<MapPoint>();
@@ -47,7 +47,10 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	  private String currentChoice = "All";
 	  private int showLabels = 0;
 	  private ArrayList<Marker> markers = new ArrayList<Marker>();
+	  private String currentWiFiCellChoice = "WiFi";
+	  private String previousWiFiCellChoice = "";
 	  private LatLngBounds old_bounds;
+	  int startup = 1;
 	  @SuppressLint("NewApi")
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	        .getMap();
 	    //map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 	    map.setMyLocationEnabled(true);
-	    
+
 
 	    // Get LocationManager object from System Service LOCATION_SERVICE
 	    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -70,15 +73,15 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 
 	    // Get Current Location
 	    Location myLocation = locationManager.getLastKnownLocation(provider);
-	   
-	    
+
+
 	    // Show the current location in Google Map        
 	    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng
 	    		(myLocation.getLatitude(), myLocation.getLongitude()), 16));
-	    
+
 	    addItemsToSpinners();
 	    old_bounds = map.getProjection().getVisibleRegion().latLngBounds;
-	    
+
 	  //setup Button listener for show label button
         final Button labelBtn = (Button) findViewById(R.id.showLabels);
     	
@@ -112,7 +115,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 							 }
 						 }
 					   }
-					   
+
     				 labelBtn.setText("Hide Labels");
     			 } else {
     				 showLabels = 0;
@@ -124,13 +127,13 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     			 }
     		 }
     	});//button listener closes
-	    
-	    
+
+
 	    map.setOnCameraChangeListener(new OnCameraChangeListener() {
-	    	
+
             
 	    	public void onCameraChange(CameraPosition position) {
-	    		
+
 	    		int maxAllowedZoom = 18;
 	    		if (showLabels == 1) {
 	    			maxAllowedZoom = 24;
@@ -144,7 +147,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(position.target, 16));
 	    		}
 	    		LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
-	    		
+
                 
                 EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
                 
@@ -167,7 +170,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     		    	accessPoints.put("All", "-");
     		    	
     		    	list_access_points = Arrays.asList(accessPoints.keySet().toArray());
-				    
+
     		    } //updating access points spinner ends here
 
     		    if (previousChoice.equals("")) {
@@ -207,61 +210,62 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 				return Math.sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
 			}
 
-	    	
-	    	
+
+
         });
 
 	  } 
 
-	 
+
 	  private void addItemsToSpinners() {
 		  spinner_wifi_cell = (Spinner) findViewById(R.id.wifi_or_cell_spinner);
-		  
-		  
+
+
 		  ArrayAdapter<String> wifiCellAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, list_wifi_cell);
 		  wifiCellAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		  spinner_wifi_cell.setAdapter(wifiCellAdapter);
+		  spinner_wifi_cell.setOnItemSelectedListener(this);
 
-		
+
 	}
 
 	 private void set_spinner2_adapter() {
-		 
+
 		 spinner_access_points=(Spinner) findViewById(R.id.access_points_spinner);
 		 accessPointsAdapter = new ArrayAdapter<Object>(this, android.R.layout.simple_spinner_item, list_access_points); 
 			  accessPointsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			  spinner_access_points.setAdapter(accessPointsAdapter);
-			  
+
 			//set listener for selecting items
 			spinner_access_points.setOnItemSelectedListener(this);
 	 }
 
 	private void plotHeatPoints(List<MapPoint> coords1, LatLngBounds bounds) {
-		
+
 
 			 //extend bounds slightly
 			bounds.including(new LatLng(bounds.northeast.latitude+7.0, bounds.northeast.longitude+7.0));
 			bounds.including(new LatLng(bounds.southwest.latitude+7.0, bounds.southwest.longitude+7.0));
-			
+
 		    for (int i = coords1.size() - 1; i >= 0; i--) {
-		    	
+
 		    	LatLng latLng = new LatLng(coords1.get(i).latitude, coords1.get(i).longitude);
-		    	
+
 		    	if (bounds.contains(latLng)) {
-		    		
-		    		
+
+
 		    		//plot the heatpoint
-		    		
+
 		    		//first, get resource 
 		    		List<Integer> resourceInfo = 
 		    				choose_resource(coords1.get(i).WifiStrength);
-		    		
-		    		
-		    		
-					
+
+
+
+
 					try {
-						
+
 					   // Adds a ground overlay with transparency.
 					   GroundOverlay groundOverlay = map.addGroundOverlay(new GroundOverlayOptions()
 			    		     .image(BitmapDescriptorFactory.fromResource(resourceInfo.get(0)))
@@ -272,18 +276,18 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 					} catch (Exception ex) {
 					   Log.e("Error", ex.getMessage()); 
 					}
-					
-					
-		    		
-		    		
+
+
+
+
 		    	}
 
 		    }
-		    
-		  
-		   
-		   
-		    
+
+
+
+
+
 	  }
 
 
@@ -291,57 +295,102 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		//Function returns drawable resource and z_index at which
 		//it must be drawn
 		int w = wifiStrength * -1;
-		
-		
+
+
 		if (w > 90) {
 			return Arrays.asList(R.drawable.hp_blue, 4, 18);
 		}
-		
+
 		if (w <= 90 && w > 88) {
 			return Arrays.asList(R.drawable.hp_turquoise, 4, 16); 
 		}
-		
+
 		if (w <= 88 && w > 84) {
 			return Arrays.asList(R.drawable.hp_green, 5, 14);
 		}
-		
+
 		if (w <= 84 && w > 79) {
 			return Arrays.asList(R.drawable.hp_lime_green, 5, 12);
 		}
-		
+
 		if (w <= 79 && w > 74) {
 			return Arrays.asList(R.drawable.hp_golden, 7, 9);
 		}
-		
+
 		if (w <= 74 && w > 65) {
 			return Arrays.asList(R.drawable.hp_orange, 7, 6);
 		}
-		
+
 		if (w <= 65 && w > 60) {
 			return Arrays.asList(R.drawable.hp_reddish_orange, 7, 4);
 		}
-		
+
 		if (w <= 60) {
 			return Arrays.asList(R.drawable.hp_red, 7, 2);
 		}
-		
+
 		return Arrays.asList(R.drawable.hp_deep_blue, 10, 0); //default
 	}
 
 
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
+
+		if (startup == 0 && parent.getId()==R.id.wifi_or_cell_spinner) {
+			//if first spinner has been accessed
+			System.out.println("APPMESG You just changed wifi / cell");
+
+			currentWiFiCellChoice = (String) list_wifi_cell.get((int) parent.getItemIdAtPosition(position));
+			if (currentWiFiCellChoice.equals("3G/4G")) {
+				//3g/4g chosen
+				Object arr[] = {"All" , "Vodafone AU"};
+				System.out.println("APPMESG: You chose "+currentWiFiCellChoice);
+				list_access_points = Arrays.asList(arr);
+				set_spinner2_adapter();
+				return;
+			}else {
+				System.out.println("WiFi chosen");
+				EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
+                
+    		    coords = edbh.getLatLong();
+    		    edbh.close();
+                Map<String, String> accessPoints = new TreeMap<String, String>();
+                accessPoints.clear();
+                prev_list_access_points = list_access_points;
+    		    
+    		    for (int i = 0; i < coords.size(); i++) {
+    		    	
+    		    	LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
+    		    	LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+    		    	if (bounds.contains(latLng)) {
+    		    		
+    		    		accessPoints.put(coords.get(i).SSID, "-"); //to ensure uniqueness
+    					 
+    		    	}
+    		    	
+    		    	accessPoints.put("All", "-");
+    		    	
+    		    	list_access_points = Arrays.asList(accessPoints.keySet().toArray());
+
+    		    } //updating access points spinner ends here
+				set_spinner2_adapter();
+			}
+		}
 		
+		if (startup == 1) {
+			startup = 0;
+			return;
+		}
 		
 		//however, if the item was not clicked , we don't want current choice to update
-		
+
 		currentChoice = (String) list_access_points.get((int) parent.getItemIdAtPosition(position));
-		
-		
+
+
 		EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
 		ArrayList<MapPoint> coords1 = edbh.getLatLong();
 		edbh.close();
-		
+
 		//If "All" is selected, but it has recently changed, ie, the user has
 		//explicitly clicked "All"
 		if (currentChoice.equals("All")) {
@@ -353,38 +402,38 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 				return;
 			}
 
-			
+
 			return; //this is important. Function must return at this point.
 		}
-		
-		
+
+
 		ArrayList<MapPoint> specialcoords = new ArrayList<MapPoint>();
 
 		for(int i = 0; i < coords1.size(); i++) {
-			
+
 			if (coords1.get(i).SSID.equals(currentChoice)) {
 				specialcoords.add(coords1.get(i));
 			}
 		}
-		
+
 		if (!(currentChoice.equals(previousChoice))) {
 			map.clear();
 			Toast.makeText( this, "Recalculating...", Toast.LENGTH_SHORT ).show();
 			plotHeatPoints(specialcoords, map.getProjection().getVisibleRegion().latLngBounds);
 		}
-		
+
 		previousChoice = currentChoice;
-		
+
 	}
 
 
 	public void onNothingSelected(AdapterView<?> arg0) {
-		
-		
+
+
 	}
 
 
 
-	  
-	  
+
+
 }
