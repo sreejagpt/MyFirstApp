@@ -94,28 +94,55 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     			 //start activity MyMapView
     			
     			 if (labelBtn.getText().equals("Show Labels")) {
+    				 
+    				 
     				 showLabels = 1;
     				 markers.clear();
-    				 for(int i = 0; i < coords.size(); i++){
-    					 LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
-						 if (currentChoice.equals("All")) {
-						//Post little floating notices
-						   markers.add( map.addMarker(new MarkerOptions()
-	                          .position(latLng)
-	                          .title(coords.get(i).SSID)
-	                          .snippet(coords.get(i).description)
-	                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
-						 } else {
-							 if (coords.get(i).SSID.equals(currentChoice)) {
-								 markers.add( map.addMarker(new MarkerOptions()
+    				 if (currentWiFiCellChoice.equals("WiFi")) {
+	    				 for(int i = 0; i < coords.size(); i++){
+	    					 LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
+							 if (currentChoice.equals("All")) {
+							//Post little floating notices
+							   markers.add( map.addMarker(new MarkerOptions()
 		                          .position(latLng)
 		                          .title(coords.get(i).SSID)
 		                          .snippet(coords.get(i).description)
 		                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
+							 } else {
+								 if (coords.get(i).SSID.equals(currentChoice)) {
+									 markers.add( map.addMarker(new MarkerOptions()
+			                          .position(latLng)
+			                          .title(coords.get(i).SSID)
+			                          .snippet(coords.get(i).description)
+			                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
+								 }
 							 }
-						 }
-					   }
-
+						   }
+    				 } else {
+    					 //plot markers for cell coords
+    					 CellDB_Helper cdbh = new CellDB_Helper(getApplicationContext());
+    						ArrayList<CellPoint> coords1 = cdbh.getLatLong();
+    						cdbh.close();
+    						
+    						for(int i = 0; i < coords1.size(); i++){
+   	    					 LatLng latLng = new LatLng(coords1.get(i).latitude, coords1.get(i).longitude);
+   							 if (currentChoice.equals("All")) {
+   							//Post little floating notices
+   							   markers.add( map.addMarker(new MarkerOptions()
+   		                          .position(latLng)
+   		                          .title(coords1.get(i).Provider)
+   		                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
+   							 } else {
+   								 if (coords1.get(i).Provider.equals(currentChoice)) {
+   									 markers.add( map.addMarker(new MarkerOptions()
+   			                          .position(latLng)
+   			                          .title(coords1.get(i).Provider)
+   			                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.ap_marker))));
+   								 }
+   							 }
+   						   }
+    						
+    				 }
     				 labelBtn.setText("Hide Labels");
     			 } else {
     				 showLabels = 0;
@@ -229,7 +256,6 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		  wifiCellAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		  spinner_wifi_cell.setAdapter(wifiCellAdapter);
 		  spinner_wifi_cell.setOnItemSelectedListener(this);
-
 
 	}
 

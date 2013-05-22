@@ -23,7 +23,6 @@ public class ButtonChooseScreen extends Activity{
     		
     		 public void onClick(View v) {
     			 //start activity MyMapView
-    			
     			 Intent i = new Intent(v.getContext(), MyMapView.class);
     			 startActivity(i);
     		 }
@@ -36,12 +35,10 @@ public class ButtonChooseScreen extends Activity{
     	//setup onclick listener for storeBtn
     	//everytime it is pressed, info gets retrieved and sent to local DB
     	wiFiBtn.setOnClickListener(new Button.OnClickListener() {
-    		
     		 public void onClick(View v) {
     			//start activity MyFirstActivity
     			 Intent i = new Intent(v.getContext(), MyFirstActivity.class);
     			 startActivity(i);
-    			 
     		 }
     	});//listener closes
 	}
