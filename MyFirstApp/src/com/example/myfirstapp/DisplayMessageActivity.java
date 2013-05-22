@@ -51,10 +51,10 @@ public class DisplayMessageActivity extends Activity {
         
         //extract position-th row from arraylist and put it in activity header
         TextView tvId = (TextView) findViewById(R.id.wifiTextView);
-        String display = "SSID: "+SSID+"\n\nMAC Address: "+MAC
-        		+"\n\nWiFi Strength (dBm): "+wStrength+" Cell Signal " +
-        				"Strength (asu): "+cStrength+"\n\nLongitude: "+longitude+
-        		" Latitude: "+ latitude+ "\n\nCell ID: "+ CellID+ " LAC: "+LAC+"\n\n";
+        String display = "SSID: "+SSID+"\nMAC Address: "+MAC
+        		+"\nWiFi Strength (dBm): "+wStrength+"\n\nLongitude: "+longitude+
+        		"\nLatitude: "+ latitude+ "\n\nCell Signal " +
+        				"Strength (asu): "+cStrength+"\nCell ID: "+ CellID+ "\nLAC: "+LAC+"\nProvider: "+Provider;
         tvId.setText(display);
         
         //upon buttonclick, we read description from the editText, and store to

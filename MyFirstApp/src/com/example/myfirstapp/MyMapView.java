@@ -67,10 +67,10 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 
 	    // Create a criteria object to retrieve provider
 	    Criteria criteria = new Criteria();
-
+	    String provider = LocationManager.GPS_PROVIDER;
 	    // Get the name of the best provider
-	    String provider = locationManager.getBestProvider(criteria, true);
-
+	    provider = locationManager.getBestProvider(criteria, false);
+	    
 	    // Get Current Location
 	    Location myLocation = locationManager.getLastKnownLocation(provider);
 
@@ -188,7 +188,11 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     		    		&& distance(bounds.northeast, old_bounds.northeast) > 0.0028) {
     		    	map.clear();
     		    	Toast.makeText( getApplicationContext(), "Recalculating...", Toast.LENGTH_SHORT ).show();
-    		    	plotHeatPoints(coords, map.getProjection().getVisibleRegion().latLngBounds);
+    		    	if (currentWiFiCellChoice.equals("WiFi")) {
+    		    		plotHeatPoints(coords, map.getProjection().getVisibleRegion().latLngBounds);
+    		    	}else {
+    		    		handle_cell_plot();
+    		    	}
     		    	old_bounds = current_bounds;
     		    	set_spinner2_adapter(); 
     		    	return;
@@ -277,24 +281,20 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 					   Log.e("Error", ex.getMessage()); 
 					}
 
-
-
-
 		    	}
 
 		    }
 
-
-
-
-
 	  }
 
+	
+	
+	
 
-	private List<Integer> choose_resource(int wifiStrength) {
+	private List<Integer> choose_resource(int strength) {
 		//Function returns drawable resource and z_index at which
 		//it must be drawn
-		int w = wifiStrength * -1;
+		int w = strength * -1;
 
 
 		if (w > 90) {
@@ -347,6 +347,8 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 				System.out.println("APPMESG: You chose "+currentWiFiCellChoice);
 				list_access_points = Arrays.asList(arr);
 				set_spinner2_adapter();
+				handle_cell_plot();
+				previousWiFiCellChoice = currentWiFiCellChoice;
 				return;
 			}else {
 				System.out.println("WiFi chosen");
@@ -363,17 +365,24 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
     		    	LatLng latLng = new LatLng(coords.get(i).latitude, coords.get(i).longitude);
     		    	LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
     		    	if (bounds.contains(latLng)) {
-    		    		
     		    		accessPoints.put(coords.get(i).SSID, "-"); //to ensure uniqueness
-    					 
     		    	}
     		    	
     		    	accessPoints.put("All", "-");
     		    	
     		    	list_access_points = Arrays.asList(accessPoints.keySet().toArray());
+    		    	
+    		    	if (previousWiFiCellChoice.equals("3G/4G") && currentWiFiCellChoice.equals("WiFi")) {
+    		    		map.clear();
+    		    		plotHeatPoints(coords, bounds);
+    		    	}
+    		    	previousWiFiCellChoice = currentWiFiCellChoice;
+    		    	
+    		    	
 
     		    } //updating access points spinner ends here
 				set_spinner2_adapter();
+				
 			}
 		}
 		
@@ -397,7 +406,12 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 			if (!(previousChoice.equals(currentChoice))) {
 				map.clear();
 				Toast.makeText( this, "Recalculating...", Toast.LENGTH_SHORT ).show();
-				plotHeatPoints(coords1, map.getProjection().getVisibleRegion().latLngBounds);
+				if (currentWiFiCellChoice.equals("WiFi")) {
+					plotHeatPoints(coords1, map.getProjection().getVisibleRegion().latLngBounds);
+		    	}else {
+		    		handle_cell_plot();
+		    	}
+				
 				previousChoice = currentChoice;
 				return;
 			}
@@ -419,10 +433,61 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		if (!(currentChoice.equals(previousChoice))) {
 			map.clear();
 			Toast.makeText( this, "Recalculating...", Toast.LENGTH_SHORT ).show();
-			plotHeatPoints(specialcoords, map.getProjection().getVisibleRegion().latLngBounds);
+			if (currentWiFiCellChoice.equals("WiFi")) {
+				plotHeatPoints(specialcoords, map.getProjection().getVisibleRegion().latLngBounds);
+	    	} else {
+	    		handle_cell_plot();
+	    	}
 		}
 
 		previousChoice = currentChoice;
+
+	}
+
+
+	private void handle_cell_plot() {
+		//plots map is cell is selected
+		map.clear();
+
+		LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+		 //extend bounds slightly
+		bounds.including(new LatLng(bounds.northeast.latitude+7.0, bounds.northeast.longitude+7.0));
+		bounds.including(new LatLng(bounds.southwest.latitude+7.0, bounds.southwest.longitude+7.0));
+
+		CellDB_Helper cdbh = new CellDB_Helper(getApplicationContext());
+		ArrayList<CellPoint> coords1 = cdbh.getLatLong();
+		cdbh.close();
+		
+		
+	    for (int i = coords1.size() - 1; i >= 0; i--) {
+
+	    	LatLng latLng = new LatLng(coords1.get(i).latitude, coords1.get(i).longitude);
+
+	    	if (bounds.contains(latLng)) {
+
+
+	    		//plot the heatpoint
+
+	    		//first, get resource 
+	    		List<Integer> resourceInfo = 
+	    				choose_resource((2 * coords1.get(i).CellStrength) - 113);
+
+				try {
+
+				   // Adds a ground overlay with transparency.
+				   GroundOverlay groundOverlay = map.addGroundOverlay(new GroundOverlayOptions()
+		    		     .image(BitmapDescriptorFactory.fromResource(resourceInfo.get(0)))
+		    		     .zIndex(resourceInfo.get(1))
+		    		     .position(latLng, resourceInfo.get(2) * 20)//possibly scale this according to zoom level
+		    		     .transparency((1 - 0.03f * (resourceInfo.get(1) % 10))));
+
+				} catch (Exception ex) {
+				   Log.e("Error", ex.getMessage()); 
+				}
+
+	    	}
+
+	    }
 
 	}
 

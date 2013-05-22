@@ -5,7 +5,7 @@
     <string name="title_activity_my_first">Open WiFi HotSpots</string>
     <string name="edit_message">Description of WiFi Access Point</string>
     <string name="button_send">Save</string>
-    <string name="Description">DESCRIPTION:</string>
+    <string name="Description">DESCRIPTION</string>
     <string name="openWiFi">Submit a WiFi Access Point</string>
     <string name="openMaps">See Map View</string>
     <string name="show_labels">Show Labels</string>
