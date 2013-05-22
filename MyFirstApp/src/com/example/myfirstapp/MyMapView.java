@@ -417,8 +417,12 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 		}
 		
 		//however, if the item was not clicked , we don't want current choice to update
-
-		currentChoice = (String) list_access_points.get((int) parent.getItemIdAtPosition(position));
+		try {
+			currentChoice = (String) list_access_points.get((int) parent.getItemIdAtPosition(position));
+		}catch (Exception e) {
+			System.out.println("APPMESG: "+e.toString());
+			return;
+		}
 
 
 		EntryDB_Helper edbh = new EntryDB_Helper(getApplicationContext());
