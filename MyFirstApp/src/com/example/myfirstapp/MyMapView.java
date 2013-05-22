@@ -58,7 +58,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	    setContentView(R.layout.mapview_v2);
 	    map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 	        .getMap();
-	    //map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+	    
 	    map.setMyLocationEnabled(true);
 
 
@@ -82,7 +82,7 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 	    addItemsToSpinners();
 	    old_bounds = map.getProjection().getVisibleRegion().latLngBounds;
 
-	  //setup Button listener for show label button
+	    //setup Button listener for show label button
         final Button labelBtn = (Button) findViewById(R.id.showLabels);
     	
     	//setup onclick listener for label button
@@ -223,7 +223,6 @@ public class MyMapView extends Activity implements OnItemSelectedListener {
 
 	  private void addItemsToSpinners() {
 		  spinner_wifi_cell = (Spinner) findViewById(R.id.wifi_or_cell_spinner);
-
 
 		  ArrayAdapter<String> wifiCellAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, list_wifi_cell);

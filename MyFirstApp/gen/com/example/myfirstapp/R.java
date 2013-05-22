@@ -160,13 +160,13 @@ containing a value of this type.
         public static final int menu_settings=0x7f040013;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
-        public static final int openMaps=0x7f040011;
+        public static final int openMaps=0x7f040010;
         public static final int openWiFiList=0x7f04000f;
         public static final int rowTextView=0x7f04000e;
         public static final int satellite=0x7f040002;
         public static final int showLabels=0x7f04000a;
         public static final int storeBtn=0x7f04000d;
-        public static final int submitWiFi=0x7f040010;
+        public static final int submitWiFi=0x7f040011;
         public static final int terrain=0x7f040003;
         public static final int viewMap=0x7f040012;
         public static final int wifiTextView=0x7f04000b;

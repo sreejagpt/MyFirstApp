@@ -29,9 +29,7 @@ public class ButtonChooseScreen extends Activity{
     		 }
     	});//listener closes
     	
-    	
-    	
-    
+
     	//setup Button listener for WiFi Button
         final Button wiFiBtn = (Button) findViewById(R.id.openWiFiList);
     	
